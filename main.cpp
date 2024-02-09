@@ -13,6 +13,8 @@ int main(int argc, char *argv[])
     bool debug = false;
     bool help = false;
     QString output = "";
+    QString xtile_string = "";
+    QString ytile_string = "";
 
     QTextStream out = QTextStream(stdout);
 
@@ -108,17 +110,21 @@ int main(int argc, char *argv[])
     //(Math.floor((lon+180)/360*Math.pow(2,zoom))); }
     xtile = qFloor( ( lon + 180 ) / 360 * qPow(2,zoom) );
 
+    xtile_string = QString("%1").arg(xtile, 0, 'f', 0);
+
     if(debug)
     {
-        out << "xtile: " << xtile << Qt::endl;
+        out << "xtile: " << xtile_string << Qt::endl;
     }
 
     //(( (1-Math.log(Math.tan(lat*Math.PI/180) + 1/Math.cos(lat*Math.PI/180))/Math.PI)/2 *Math.pow(2,zoom) ));
     ytile = qFloor( ( 1 - qLn( qTan(lat * M_PI / 180 ) + 1 / qCos( lat * M_PI/180) ) / M_PI ) /2 * qPow(2,zoom) );
 
+    ytile_string = QString("%1").arg(ytile, 0, 'f', 0);
+
     if(debug)
     {
-        out << "ytile: " << ytile << Qt::endl;
+        out << "ytile: " << ytile_string << Qt::endl;
     }
 
     if( output.toUpper() == "JSON" )
@@ -126,8 +132,8 @@ int main(int argc, char *argv[])
         out << "{";
         //out << "\"latitude\":\"" << lat << "\",";
         //out << "\"longitude\":\"" << lon << "\",";
-        out << "\"x-tile\":\"" << xtile << "\",";
-        out << "\"y-tile\":\"" << ytile << "\",";
+        out << "\"x-tile\":\"" << xtile_string << "\",";
+        out << "\"y-tile\":\"" << ytile_string << "\",";
         out << "\"zoom\":\"" << zoom << "\"";
         out << "}" << Qt::endl;
 
@@ -138,14 +144,16 @@ int main(int argc, char *argv[])
         //out << "<Latitude>" << lat << "</Latitude>";
         //out << "<Longitude>" << lon << "</Longitude>";
         out << "<ZoomLevel>" << zoom << "</ZoomLevel>";
-        out << "<X-Tile>" << xtile << "</X-Tile>";
-        out << "<Y-Tile>" << ytile << "</Y-Tile>";
+        out << "<X-Tile>" << xtile_string << "</X-Tile>";
+        out << "<Y-Tile>" << ytile_string << "</Y-Tile>";
         out << "</Location>" << Qt::endl;
 
     } else {
 
-        out << xtile << "," << ytile << "," << zoom << Qt::endl;
+        out << xtile_string << "," << ytile_string << "," << zoom << Qt::endl;
     }
 
     a.exit(0);
 }
+
+// /mnt/tiles/gps2leaflet --latitude -17.291237620233325 --longitude 177.04899731622493 --zoom 20
